@@ -1,0 +1,54 @@
+﻿@model IdentitySample.Models.EditUserViewModel
+
+@{
+    ViewBag.Title = "Edit";
+}
+
+<h2>Edit.</h2>
+
+
+@using (Html.BeginForm()) {
+    @Html.AntiForgeryToken()
+
+    <div class="form-horizontal">
+        <h4>Edit Client Forums.</h4>
+        <hr />
+        <div>
+            <h4>Client Forums that @Html.DisplayFor(model => model.Email) Belongs to</h4>
+            <hr />
+            @Html.HiddenFor(model => model.Id)
+            <dl class="dl-horizontal">
+                <dt>
+                    @Html.DisplayNameFor(model => model.Email)
+                </dt>
+                <dd>
+                    @Html.DisplayFor(model => model.Email)
+                </dd>
+            </dl>
+        </div>
+        <div class="form-group">
+            @Html.Label("Client Forums", new { @class = "control-label col-md-2" })
+            <span class=" col-md-10">
+                @foreach (var item in Model.ClientForumsList)
+                {
+                    <input type="checkbox" name="SelectedForums" value="@item.Value" checked="@item.Selected" class="checkbox-inline" />
+                    @Html.Label(item.Text, new { @class = "control-label" })
+                }
+            </span>
+        </div>
+
+        <div class="form-group">
+            <div class="col-md-offset-2 col-md-10">
+                <input type="submit" value="Save" class="btn btn-default" />
+            </div>
+        </div>
+    </div>
+}
+
+<div>
+    @Html.ActionLink("Back to List", "Index")
+</div>
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+}

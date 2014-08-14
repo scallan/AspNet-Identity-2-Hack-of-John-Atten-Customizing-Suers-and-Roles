@@ -53,10 +53,24 @@ namespace IdentitySample.Controllers
             }
         }
 
+
+        private ApplicationDbContext _dbContext;
+        public ApplicationDbContext DbContext
+        {
+            get
+            {
+                return _dbContext ?? HttpContext.GetOwinContext().Get<ApplicationDbContext>();
+            }
+            private set
+            {
+                _dbContext = value;
+            }
+        }
+
         //
         // GET: /Users/
         //public async Task<ActionResult> Index(string sortOrder, string currentFilter, string searchString, int? page)
-        public async Task<ActionResult> Index(string sortOrder, string currentFilter, string searchString, int? page)
+        public ActionResult Index(string sortOrder, string currentFilter, string searchString, int? page)
         {
             ViewBag.CurrentSort = sortOrder;
             ViewBag.NameSortParm = String.IsNullOrEmpty(sortOrder) ? "name_desc" : "";
@@ -138,9 +152,8 @@ namespace IdentitySample.Controllers
                     UserName = userViewModel.Email, 
                     Email = userViewModel.Email,
                     ClientId = userViewModel.ClientId,
-                    ClientRole = userViewModel.ClientRole,
-                    ClientForums = userViewModel.ClientForums
                 };
+
                 //user.ClientId = userViewModel.ClientId;
                 //user.ClientRole = userViewModel.ClientRole;
                 //user.ClientForums = new List<string>(userViewModel.ClientForums);
@@ -194,8 +207,6 @@ namespace IdentitySample.Controllers
                 Id = user.Id,
                 Email = user.Email,
                 ClientId = user.ClientId,
-                ClientRole = user.ClientRole,
-                ClientForums = user.ClientForums,
                 RolesList = RoleManager.Roles.ToList().Select(x => new SelectListItem()
                 {
                     Selected = userRoles.Contains(x.Name),
@@ -222,8 +233,6 @@ namespace IdentitySample.Controllers
                 user.UserName = editUser.Email;
                 user.Email = editUser.Email;
                 user.ClientId = editUser.ClientId;
-                user.ClientRole = editUser.ClientRole;
-                user.ClientForums = editUser.ClientForums;
 
                 var userRoles = await UserManager.GetRolesAsync(user.Id);
 
@@ -292,6 +301,36 @@ namespace IdentitySample.Controllers
                 return RedirectToAction("Index");
             }
             return View();
+        }
+
+
+
+        public async Task<ActionResult> ClientForums(string id)
+        {
+            var user = this.UserManager.FindById(id);
+            var model = new EditUserViewModel()
+            {
+                Id = user.Id,
+                Email = user.Email,
+                ClientForumsList = (await this.DbContext.ClientForums.ToListAsync()).Select(x => new SelectListItem()
+                {
+                    Selected = user.ClientForums.Any(cf => cf.ClientForumId == x.Id),
+                    Text = x.Name,
+                    Value = x.Id
+                })
+            };
+            return View(model);
+        }
+
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<ActionResult> ClientForums([Bind(Include = "Id")] EditUserViewModel editUser, params string[] selectedForums)
+        {
+            var user = await this.UserManager.FindByIdAsync(editUser.Id);
+            var forumManager = new ClientForumManager(this.DbContext);
+            await forumManager.SetUserForumsAsync(editUser.Id, selectedForums);
+            return RedirectToAction("Index");
         }
     }
 }

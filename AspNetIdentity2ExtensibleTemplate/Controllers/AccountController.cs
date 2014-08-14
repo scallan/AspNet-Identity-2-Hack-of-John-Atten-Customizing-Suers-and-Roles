@@ -151,8 +151,6 @@ namespace IdentitySample.Controllers
             {
                 var user = new ApplicationUser { UserName = model.Email, Email = model.Email };
                 user.ClientId = model.ClientId;
-                user.ClientRole = model.ClientRole;
-                user.ClientForums = model.ClientForums;
 
                 var result = await UserManager.CreateAsync(user, model.Password);
                 if (result.Succeeded)
