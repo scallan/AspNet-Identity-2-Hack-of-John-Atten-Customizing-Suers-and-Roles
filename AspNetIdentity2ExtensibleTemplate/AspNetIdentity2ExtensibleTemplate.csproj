@@ -158,6 +158,7 @@
     <Content Include="packages.config" />
     <Content Include="ReadmePagation.txt" />
     <Content Include="Views\UsersAdmin\EditUser.cshtml" />
+    <Content Include="Views\UsersAdmin\ClientForums.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>
@@ -243,8 +244,11 @@
     </Compile>
     <Compile Include="Models\AccountViewModels.cs" />
     <Compile Include="Models\AdminViewModel.cs" />
+    <Compile Include="Models\ClientForum.cs" />
+    <Compile Include="Models\ClientForumManager.cs" />
     <Compile Include="Models\IdentityModels.cs" />
     <Compile Include="Models\ManageViewModels.cs" />
+    <Compile Include="Models\UserClientForum.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Startup.cs" />
   </ItemGroup>

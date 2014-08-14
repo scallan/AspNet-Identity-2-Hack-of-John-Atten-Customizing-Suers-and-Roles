@@ -120,7 +120,9 @@ namespace IdentitySample.Models
             var userManager = HttpContext.Current.GetOwinContext().GetUserManager<ApplicationUserManager>();
             var roleManager = HttpContext.Current.GetOwinContext().Get<ApplicationRoleManager>();
             const string name = "someone@here.com";
-            const string password = "somethingstrong";
+
+            // You need a password with at least one number, and a special character or login will fail:
+            const string password = "Password1!";
             const string roleName = "Admin";
 
             //Create Role Admin if it does not exist
@@ -133,9 +135,7 @@ namespace IdentitySample.Models
 
             var user = userManager.FindByName(name);
             if (user == null) {
-                List<string> tmp = new List<string>();
-                tmp.Add("Main");
-                user = new ApplicationUser { UserName = name, Email = name, ClientId = "xxxxx", ClientRole= "uuuu", ClientForums = new List<string>(tmp) };
+                user = new ApplicationUser { UserName = name, Email = name, ClientId = "xxxxx" };
                 var result = userManager.Create(user, password);
                 result = userManager.SetLockoutEnabled(user.Id, false);
             }
@@ -145,6 +145,15 @@ namespace IdentitySample.Models
             if (!rolesForUser.Contains(role.Name)) {
                 var result = userManager.AddToRole(user.Id, role.Name);
             }
+
+            // Create a couple Forums:
+            var forumManager = new ClientForumManager(db);
+            forumManager.Create(new ClientForum { Name = "Forum 1", SomeOtherForumProperty = "SillyProperty 1" });
+            forumManager.Create(new ClientForum { Name = "Forum 2", SomeOtherForumProperty = "SillyProperty 2" });
+
+            var firstForum = db.ClientForums.FirstOrDefault();
+            forumManager.AddUserToForum(user.Id, firstForum.Id);
+
         }
     }
 

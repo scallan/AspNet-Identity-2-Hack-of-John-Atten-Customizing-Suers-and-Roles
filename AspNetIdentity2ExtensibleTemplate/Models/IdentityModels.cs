@@ -24,6 +24,7 @@ namespace IdentitySample.Models
         {
             this.Id = Guid.NewGuid().ToString();
             // Add any custom User properties/code here
+            this.ClientForums = new List<UserClientForum>();
         }
 
 
@@ -36,9 +37,8 @@ namespace IdentitySample.Models
         }
 
         public string ClientId { get; set; }
-        public string ClientRole { get; set; }
-        public List<string> ClientForums { get; set; }
         public string Description { get; set; }
+        public virtual ICollection<UserClientForum> ClientForums { get; set; }
     }
 
     // Must be expressed in terms of our custom UserRole:
@@ -78,7 +78,27 @@ namespace IdentitySample.Models
             return new ApplicationDbContext();
         }
 
-        // Add additional items here as needed
+
+        protected override void OnModelCreating(DbModelBuilder modelBuilder)
+        {
+            base.OnModelCreating(modelBuilder);
+
+
+            modelBuilder.Entity<ClientForum>()
+                .HasMany<UserClientForum>((ClientForum cf) => cf.Users)
+                .WithRequired().HasForeignKey<string>((UserClientForum ucf) => ucf.ClientForumId);
+
+            modelBuilder.Entity<UserClientForum>()
+                .HasKey((UserClientForum ucf) =>
+                    new
+                    {
+                        ApplicationUserId = ucf.ApplicationUserId,
+                        ClientForumId = ucf.ClientForumId
+                    }).ToTable("UserClientForums");
+        }
+
+        // Important that this is added as "virtual":
+        public virtual IDbSet<ClientForum> ClientForums { get; set; }
     }
 
     // Most likely won't need to customize these either, but they were needed because we implemented

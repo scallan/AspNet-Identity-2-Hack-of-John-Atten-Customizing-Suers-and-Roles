@@ -23,9 +23,7 @@ namespace IdentitySample.Models
         public string Email { get; set; }
 
         public string ClientId { get; set; }
-        public string ClientRole { get; set; }
-        public List<string> ClientForums { get; set; }
-
+        public IEnumerable<SelectListItem> ClientForumsList { get; set; }
         public IEnumerable<SelectListItem> RolesList { get; set; }
     }
 }
