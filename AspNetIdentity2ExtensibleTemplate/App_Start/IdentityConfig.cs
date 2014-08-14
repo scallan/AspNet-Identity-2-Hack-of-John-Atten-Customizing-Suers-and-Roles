@@ -120,6 +120,8 @@ namespace IdentitySample.Models
             var userManager = HttpContext.Current.GetOwinContext().GetUserManager<ApplicationUserManager>();
             var roleManager = HttpContext.Current.GetOwinContext().Get<ApplicationRoleManager>();
             const string name = "someone@here.com";
+
+            // You need a password with at least one number, and a special character or login will fail:
             const string password = "Password1!";
             const string roleName = "Admin";
 
